@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顧客一覧 - CRMデモ</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1>顧客管理システム</h1>
+        
+        <div class="actions">
+            <a th:href="@{/customers/new}" class="btn btn-primary">新規登録</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>氏名</th>
+                    <th>メール</th>
+                    <th>電話</th>
+                    <th>会社名</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="customer : ${customers}">
+                    <td th:text="${customer.id}">1</td>
+                    <td th:text="${customer.name}">田中太郎</td>
+                    <td th:text="${customer.email}">tanaka@example.com</td>
+                    <td th:text="${customer.phone}">03-1234-5678</td>
+                    <td th:text="${customer.company}">株式会社サンプル</td>
+                    <td class="actions-cell">
+                        <a th:href="@{/customers/edit/{id}(id=${customer.id})}" class="btn btn-small">編集</a>
+                        <form th:action="@{/customers/delete/{id}(id=${customer.id})}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-small btn-danger" 
+                                    onclick="return confirm('削除してよろしいですか？');">削除</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${#lists.isEmpty(customers)}" class="empty-message">
+            <p>登録されている顧客情報がありません。</p>
+        </div>
+    </div>
+</body>
+</html>
