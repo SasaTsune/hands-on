@@ -12,6 +12,10 @@
 
 本アプリケーションは以下の機能を提供します。
 
+### アカウントプラン管理機能
+
+顧客に紐づくアカウントプラン情報を管理します。アカウントプランの内容はマークダウン形式で記述できます。`AccountPlanService`により、顧客IDに紐づくプランの取得、新規登録、更新、削除の操作が可能です。データはインメモリ（ArrayList）で管理されます。
+
 ### 顧客一覧表示機能
 
 顧客情報をテーブル形式で一覧表示します。各顧客レコードに対して編集・削除操作へのリンクを提供します。顧客が登録されていない場合は、空の状態を示すメッセージを表示します。
@@ -50,7 +54,7 @@
                               ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │                     Controller Layer                         │
-│                    (CustomerController)                      │
+│                    (CustomerController)                       │
 │  - HTTPリクエストの受付とルーティング                          │
 │  - Modelへのデータ設定                                        │
 │  - ビュー名の返却                                             │
@@ -58,7 +62,7 @@
                               ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │                      Service Layer                           │
-│                    (CustomerService)                         │
+│             (CustomerService, AccountPlanService)             │
 │  - ビジネスロジックの実装                                      │
 │  - データアクセスの抽象化                                      │
 │  - ID生成（AtomicLong）                                       │
@@ -66,12 +70,14 @@
                               ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │                       Data Layer                             │
-│                  (ArrayList<Customer>)                       │
+│          (ArrayList<Customer>, ArrayList<AccountPlan>)        │
 │  - インメモリデータストレージ                                  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### データモデル
+
+#### 顧客情報（Customer）
 
 顧客情報は`Customer`クラスで表現されます。
 
@@ -82,6 +88,18 @@
 | email | String | 必須 | メールアドレス |
 | phone | String | 任意 | 電話番号 |
 | company | String | 任意 | 会社名 |
+
+#### アカウントプラン（AccountPlan）
+
+アカウントプランは`AccountPlan`クラスで表現されます。顧客に紐づくプラン情報をマークダウン形式で管理します。
+
+| フィールド | 型 | 必須 | 説明 |
+|-----------|------|------|------|
+| id | Long | 自動生成 | 一意識別子。AtomicLongによる連番 |
+| customerId | Long | 必須 | 紐づく顧客のID |
+| content | String | 任意 | アカウントプランの内容（マークダウン形式） |
+| createdAt | LocalDateTime | 自動設定 | 作成日時 |
+| updatedAt | LocalDateTime | 自動設定 | 更新日時 |
 
 ### 技術スタック
 
@@ -107,9 +125,11 @@ demo-java-crm/
     │   ├── controller/
     │   │   └── CustomerController.java        # Webコントローラー
     │   ├── model/
-    │   │   └── Customer.java                  # ドメインモデル
+    │   │   ├── Customer.java                  # 顧客ドメインモデル
+    │   │   └── AccountPlan.java               # アカウントプランドメインモデル
     │   └── service/
-    │       └── CustomerService.java           # ビジネスロジック
+    │       ├── CustomerService.java           # 顧客ビジネスロジック
+    │       └── AccountPlanService.java        # アカウントプランビジネスロジック
     └── resources/
         ├── application.properties             # アプリケーション設定
         ├── static/css/
@@ -184,3 +204,4 @@ Spring Boot + Thymeleafを使用したWebアプリケーション開発の基本
 | 日付 | 変更内容 | 担当者 |
 |------|----------|--------|
 | 2026-02-05 | 初版作成（リバースエンジニアリングによるドキュメント化） | Devin |
+| 2026-02-17 | AccountPlanモデルおよびAccountPlanServiceの追加 | Devin |

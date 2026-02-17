@@ -8,6 +8,7 @@
 - 顧客情報の新規登録
 - 顧客情報の編集・更新
 - 顧客情報の削除
+- アカウントプランの管理（顧客ごとのプラン登録・取得・更新・削除）
 
 ## 技術スタック
 
@@ -109,9 +110,11 @@ demo-java-crm/
         │           └── crm/
         │               ├── CrmApplication.java           # アプリケーション起動クラス
         │               ├── model/
-        │               │   └── Customer.java             # 顧客モデル
+        │               │   ├── Customer.java             # 顧客モデル
+        │               │   └── AccountPlan.java          # アカウントプランモデル
         │               ├── service/
-        │               │   └── CustomerService.java      # ビジネスロジック
+        │               │   ├── CustomerService.java      # 顧客ビジネスロジック
+        │               │   └── AccountPlanService.java   # アカウントプランビジネスロジック
         │               └── controller/
         │                   └── CustomerController.java   # Webコントローラー
         └── resources/
