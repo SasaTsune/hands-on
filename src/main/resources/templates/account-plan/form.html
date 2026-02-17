@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEdit} ? 'アカウントプラン編集 - CRMデモ' : 'アカウントプラン登録 - CRMデモ'">アカウントプラン</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="(${isEdit} ? 'アカウントプラン編集' : 'アカウントプラン登録') + ' - ' + ${customer.name}">アカウントプラン</h1>
+
+        <form th:action="@{/customers/{id}/account-plan/save(id=${customer.id})}" th:object="${accountPlan}" method="post">
+            <input type="hidden" th:field="*{id}">
+            <input type="hidden" th:field="*{customerId}">
+
+            <div class="form-group">
+                <label for="content">プラン内容（マークダウン形式）</label>
+                <textarea id="content" th:field="*{content}" class="plan-textarea" rows="20"
+                          placeholder="マークダウン形式でアカウントプランを記述してください"></textarea>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">保存</button>
+                <a th:href="@{/customers/{id}/account-plan(id=${customer.id})}" class="btn btn-secondary">キャンセル</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
