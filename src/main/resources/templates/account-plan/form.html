@@ -16,8 +16,19 @@
 
             <div class="form-group">
                 <label for="content">プラン内容（マークダウン形式）</label>
-                <textarea id="content" th:field="*{content}" class="plan-textarea" rows="20"
-                          placeholder="マークダウン形式でアカウントプランを記述してください"></textarea>
+                <div class="preview-toggle">
+                    <button type="button" id="togglePreview" class="btn btn-small btn-secondary" onclick="togglePreview()">プレビュー表示</button>
+                </div>
+                <div class="markdown-editor">
+                    <div class="editor-pane" id="editorPane">
+                        <textarea id="content" th:field="*{content}" class="plan-textarea" rows="20"
+                                  placeholder="マークダウン形式でアカウントプランを記述してください" oninput="updatePreview()"></textarea>
+                    </div>
+                    <div class="preview-pane" id="previewPane" style="display:none;">
+                        <div class="preview-label">プレビュー</div>
+                        <div id="markdownPreview" class="markdown-body"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="form-actions">
@@ -26,5 +37,34 @@
             </div>
         </form>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+    <script>
+        var previewVisible = false;
+
+        function togglePreview() {
+            previewVisible = !previewVisible;
+            var previewPane = document.getElementById('previewPane');
+            var toggleBtn = document.getElementById('togglePreview');
+            var editor = document.querySelector('.markdown-editor');
+
+            if (previewVisible) {
+                previewPane.style.display = 'block';
+                editor.classList.add('split');
+                toggleBtn.textContent = 'プレビュー非表示';
+                updatePreview();
+            } else {
+                previewPane.style.display = 'none';
+                editor.classList.remove('split');
+                toggleBtn.textContent = 'プレビュー表示';
+            }
+        }
+
+        function updatePreview() {
+            if (!previewVisible) return;
+            var content = document.getElementById('content').value;
+            document.getElementById('markdownPreview').innerHTML = marked.parse(content || '');
+        }
+    </script>
 </body>
 </html>

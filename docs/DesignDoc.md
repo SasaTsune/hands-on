@@ -14,7 +14,7 @@
 
 ### アカウントプラン管理機能
 
-顧客に紐づくアカウントプラン情報を管理します。アカウントプランの内容はマークダウン形式で記述できます。`AccountPlanService`により、顧客IDに紐づくプランの取得、新規登録、更新、削除の操作が可能です。データはインメモリ（ArrayList）で管理されます。`AccountPlanController`が画面遷移とCRUD操作のエンドポイントを提供します。
+顧客に紐づくアカウントプラン情報を管理します。アカウントプランの内容はマークダウン形式で記述でき、入力フォームではリアルタイムプレビューが可能です。保存済みのプランは表示画面でHTMLとしてレンダリングされます。`AccountPlanService`により、顧客IDに紐づくプランの取得、新規登録、更新、削除の操作が可能です。データはインメモリ（ArrayList）で管理されます。`AccountPlanController`が画面遷移とCRUD操作のエンドポイントを提供します。
 
 エンドポイント:
 - `GET /customers/{customerId}/account-plan`（プラン表示）
@@ -119,6 +119,7 @@
 | フレームワーク | Spring Boot | 3.2.2 |
 | テンプレートエンジン | Thymeleaf | Spring Boot管理 |
 | ビルドツール | Maven | - |
+| マークダウン変換 | commonmark-java / marked.js | - |
 | Webサーバー | 組み込みTomcat | Spring Boot管理 |
 
 ### ディレクトリ構成
@@ -134,13 +135,15 @@ demo-java-crm/
     │   ├── CrmApplication.java                # アプリケーション起動クラス
     │   ├── controller/
     │   │   ├── CustomerController.java        # 顧客コントローラー
-    │   │   └── AccountPlanController.java     # アカウントプランコントローラー
+    │   │   ├── AccountPlanController.java     # アカウントプランコントローラー
+    │   │   └── GlobalExceptionHandler.java    # 例外ハンドリング
     │   ├── model/
     │   │   ├── Customer.java                  # 顧客ドメインモデル
     │   │   └── AccountPlan.java               # アカウントプランドメインモデル
     │   └── service/
     │       ├── CustomerService.java           # 顧客ビジネスロジック
-    │       └── AccountPlanService.java        # アカウントプランビジネスロジック
+    │       ├── AccountPlanService.java        # アカウントプランビジネスロジック
+    │       └── MarkdownService.java           # マークダウン変換サービス
     └── resources/
         ├── application.properties             # アプリケーション設定
         ├── static/css/
@@ -148,9 +151,10 @@ demo-java-crm/
         └── templates/
             ├── form.html                      # 顧客登録・編集フォーム
             ├── list.html                      # 顧客一覧
+            ├── error.html                     # エラー画面
             └── account-plan/
-                ├── show.html                  # アカウントプラン表示
-                └── form.html                  # アカウントプラン登録・編集フォーム
+                ├── show.html                  # アカウントプラン表示（マークダウンHTMLレンダリング）
+                └── form.html                  # アカウントプラン登録・編集フォーム（マークダウンプレビュー付き）
 ```
 
 ### 画面遷移
@@ -236,3 +240,4 @@ Spring Boot + Thymeleafを使用したWebアプリケーション開発の基本
 | 2026-02-05 | 初版作成（リバースエンジニアリングによるドキュメント化） | Devin |
 | 2026-02-17 | AccountPlanモデルおよびAccountPlanServiceの追加 | Devin |
 | 2026-02-17 | AccountPlanControllerおよび画面テンプレートの追加 | Devin |
+| 2026-02-17 | マークダウン入力プレビュー・HTMLレンダリング表示の追加 | Devin |

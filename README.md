@@ -9,6 +9,7 @@
 - 顧客情報の編集・更新
 - 顧客情報の削除
 - アカウントプランの管理（顧客ごとのプラン表示・登録・編集・削除）
+- マークダウン形式でアカウントプランを入力・リアルタイムプレビュー・ HTMLレンダリング表示
 - 顧客一覧画面からアカウントプランへの遷移
 
 ## 技術スタック
@@ -17,6 +18,7 @@
 - **フレームワーク**: Spring Boot 3.2.2
 - **テンプレートエンジン**: Thymeleaf
 - **ビルドツール**: Maven
+- **マークダウン変換**: commonmark-java 0.24.0（サーバーサイド） / marked.js（クライアントサイドプレビュー）
 - **データストレージ**: インメモリ（List）
 
 ## 必要な環境
@@ -115,10 +117,12 @@ demo-java-crm/
         │               │   └── AccountPlan.java          # アカウントプランモデル
         │               ├── service/
         │               │   ├── CustomerService.java      # 顧客ビジネスロジック
-        │               │   └── AccountPlanService.java   # アカウントプランビジネスロジック
+        │               │   ├── AccountPlanService.java   # アカウントプランビジネスロジック
+        │               │   └── MarkdownService.java      # マークダウン変換サービス
         │               └── controller/
-        │                   ├── CustomerController.java   # 顧客コントローラー
-        │                   └── AccountPlanController.java # アカウントプランコントローラー
+        │                   ├── CustomerController.java      # 顧客コントローラー
+        │                   ├── AccountPlanController.java   # アカウントプランコントローラー
+        │                   └── GlobalExceptionHandler.java  # 例外ハンドリング
         └── resources/
             ├── application.properties                    # アプリケーション設定
             ├── static/
@@ -127,9 +131,10 @@ demo-java-crm/
             └── templates/
                 ├── list.html                             # 顧客一覧画面
                 ├── form.html                             # 顧客登録・編集フォーム
+                ├── error.html                            # エラー画面
                 └── account-plan/
-                    ├── show.html                         # アカウントプラン表示画面
-                    └── form.html                         # アカウントプラン登録・編集フォーム
+                    ├── show.html                         # アカウントプラン表示画面（マークダウンHTMLレンダリング）
+                    └── form.html                         # アカウントプラン登録・編集フォーム（マークダウンプレビュー付き）
 ```
 
 ## 使い方
@@ -155,7 +160,9 @@ demo-java-crm/
 
 1. 顧客一覧画面で「プラン」ボタンをクリックしてアカウントプラン画面に遷移
 2. 「新規作成」ボタンでマークダウン形式のプラン内容を登録
-3. 登録済みのプランは「編集」ボタンで内容を更新、「削除」ボタンで削除可能
+3. 「プレビュー表示」ボタンでマークダウンのリアルタイムプレビューを確認可能
+4. 保存すると表示画面でマークダウンがHTMLとしてレンダリング表示される
+5. 登録済みのプランは「編集」ボタンで内容を更新、「削除」ボタンで削除可能
 
 ## 開発時のカスタマイズポイント
 
