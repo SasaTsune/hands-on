@@ -19,8 +19,8 @@
                 <span>作成日時: <span th:text="${#temporals.format(accountPlan.createdAt, 'yyyy/MM/dd HH:mm')}"></span></span>
                 <span>更新日時: <span th:text="${#temporals.format(accountPlan.updatedAt, 'yyyy/MM/dd HH:mm')}"></span></span>
             </div>
-            <div class="plan-body">
-                <pre class="plan-text" th:text="${accountPlan.content}"></pre>
+            <div class="plan-body markdown-body">
+                <div th:utext="${contentHtml}"></div>
             </div>
             <div class="plan-actions">
                 <a th:href="@{/customers/{id}/account-plan/edit(id=${customer.id})}" class="btn btn-primary">編集</a>

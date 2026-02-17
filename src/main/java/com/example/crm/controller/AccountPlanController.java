@@ -4,6 +4,7 @@ import com.example.crm.model.AccountPlan;
 import com.example.crm.model.Customer;
 import com.example.crm.service.AccountPlanService;
 import com.example.crm.service.CustomerService;
+import com.example.crm.service.MarkdownService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +20,12 @@ public class AccountPlanController {
 
     private final AccountPlanService accountPlanService;
     private final CustomerService customerService;
+    private final MarkdownService markdownService;
 
-    public AccountPlanController(AccountPlanService accountPlanService, CustomerService customerService) {
+    public AccountPlanController(AccountPlanService accountPlanService, CustomerService customerService, MarkdownService markdownService) {
         this.accountPlanService = accountPlanService;
         this.customerService = customerService;
+        this.markdownService = markdownService;
     }
 
     /**
@@ -34,8 +37,11 @@ public class AccountPlanController {
                 .orElseThrow(() -> new IllegalArgumentException("顧客が見つかりません: " + customerId));
         List<AccountPlan> plans = accountPlanService.findByCustomerId(customerId);
         AccountPlan accountPlan = plans.isEmpty() ? null : plans.get(0);
+        String contentHtml = (accountPlan != null && accountPlan.getContent() != null)
+                ? markdownService.renderToHtml(accountPlan.getContent()) : "";
         model.addAttribute("customer", customer);
         model.addAttribute("accountPlan", accountPlan);
+        model.addAttribute("contentHtml", contentHtml);
         return "account-plan/show";
     }
 
