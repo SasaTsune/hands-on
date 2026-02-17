@@ -47,6 +47,8 @@ public class AccountPlanService {
             accountPlan.setUpdatedAt(now);
             accountPlans.add(accountPlan);
         } else {
+            Optional<AccountPlan> existing = findById(accountPlan.getId());
+            existing.ifPresent(e -> accountPlan.setCreatedAt(e.getCreatedAt()));
             deleteById(accountPlan.getId());
             accountPlan.setUpdatedAt(now);
             accountPlans.add(accountPlan);
