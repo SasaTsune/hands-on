@@ -14,7 +14,16 @@
 
 ### アカウントプラン管理機能
 
-顧客に紐づくアカウントプラン情報を管理します。アカウントプランの内容はマークダウン形式で記述できます。`AccountPlanService`により、顧客IDに紐づくプランの取得、新規登録、更新、削除の操作が可能です。データはインメモリ（ArrayList）で管理されます。
+顧客に紐づくアカウントプラン情報を管理します。アカウントプランの内容はマークダウン形式で記述できます。`AccountPlanService`により、顧客IDに紐づくプランの取得、新規登録、更新、削除の操作が可能です。データはインメモリ（ArrayList）で管理されます。`AccountPlanController`が画面遷移とCRUD操作のエンドポイントを提供します。
+
+エンドポイント:
+- `GET /customers/{customerId}/account-plan`（プラン表示）
+- `GET /customers/{customerId}/account-plan/new`（登録フォーム表示）
+- `POST /customers/{customerId}/account-plan/save`（保存処理）
+- `GET /customers/{customerId}/account-plan/edit`（編集フォーム表示）
+- `POST /customers/{customerId}/account-plan/delete`（削除処理）
+
+存在しない顧客IDへのアクセス時は`IllegalArgumentException`をスローし、エラーハンドリングします。
 
 ### 顧客一覧表示機能
 
@@ -49,12 +58,13 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Presentation Layer                        │
-│              (Thymeleaf Templates: list.html, form.html)     │
+│  (Thymeleaf Templates: list.html, form.html,                │
+│   account-plan/show.html, account-plan/form.html)           │
 └─────────────────────────────────────────────────────────────┘
                               ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │                     Controller Layer                         │
-│                    (CustomerController)                       │
+│        (CustomerController, AccountPlanController)            │
 │  - HTTPリクエストの受付とルーティング                          │
 │  - Modelへのデータ設定                                        │
 │  - ビュー名の返却                                             │
@@ -123,7 +133,8 @@ demo-java-crm/
     ├── java/com/example/crm/
     │   ├── CrmApplication.java                # アプリケーション起動クラス
     │   ├── controller/
-    │   │   └── CustomerController.java        # Webコントローラー
+    │   │   ├── CustomerController.java        # 顧客コントローラー
+    │   │   └── AccountPlanController.java     # アカウントプランコントローラー
     │   ├── model/
     │   │   ├── Customer.java                  # 顧客ドメインモデル
     │   │   └── AccountPlan.java               # アカウントプランドメインモデル
@@ -135,8 +146,11 @@ demo-java-crm/
         ├── static/css/
         │   └── style.css                      # スタイルシート
         └── templates/
-            ├── form.html                      # 登録・編集フォーム
-            └── list.html                      # 顧客一覧
+            ├── form.html                      # 顧客登録・編集フォーム
+            ├── list.html                      # 顧客一覧
+            └── account-plan/
+                ├── show.html                  # アカウントプラン表示
+                └── form.html                  # アカウントプラン登録・編集フォーム
 ```
 
 ### 画面遷移
@@ -154,7 +168,23 @@ demo-java-crm/
     │                 ├── [保存] ──→ 顧客一覧
     │                 └── [キャンセル] ──→ 顧客一覧
     │
-    └── [削除] ──→ 確認ダイアログ ──→ 顧客一覧
+    ├── [削除] ──→ 確認ダイアログ ──→ 顧客一覧
+    │
+    └── [プラン] ──→ アカウントプラン表示 (account-plan/show.html)
+                        │
+                        ├── [新規作成] ──→ 登録フォーム (account-plan/form.html, isEdit=false)
+                        │                      │
+                        │                      ├── [保存] ──→ アカウントプラン表示
+                        │                      └── [キャンセル] ──→ アカウントプラン表示
+                        │
+                        ├── [編集] ──→ 編集フォーム (account-plan/form.html, isEdit=true)
+                        │                 │
+                        │                 ├── [保存] ──→ アカウントプラン表示
+                        │                 └── [キャンセル] ──→ アカウントプラン表示
+                        │
+                        ├── [削除] ──→ 確認ダイアログ ──→ アカウントプラン表示
+                        │
+                        └── [顧客一覧に戻る] ──→ 顧客一覧
 ```
 
 ### 初期データ
@@ -205,3 +235,4 @@ Spring Boot + Thymeleafを使用したWebアプリケーション開発の基本
 |------|----------|--------|
 | 2026-02-05 | 初版作成（リバースエンジニアリングによるドキュメント化） | Devin |
 | 2026-02-17 | AccountPlanモデルおよびAccountPlanServiceの追加 | Devin |
+| 2026-02-17 | AccountPlanControllerおよび画面テンプレートの追加 | Devin |

@@ -152,6 +152,76 @@ input:focus {
     color: #7f8c8d;
 }
 
+.error-message {
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 4px;
+    color: #856404;
+}
+
+/* アカウントプラン */
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+}
+
+.account-plan-content {
+    margin-top: 20px;
+}
+
+.plan-meta {
+    display: flex;
+    gap: 20px;
+    color: #7f8c8d;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.plan-body {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.plan-text {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.8;
+    margin: 0;
+}
+
+.plan-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.plan-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.plan-textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
     .container {
