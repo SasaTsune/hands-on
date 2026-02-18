@@ -52,6 +52,13 @@
             <artifactId>ojdbc11</artifactId>
             <scope>runtime</scope>
         </dependency>
+
+        <!-- CommonMark (マークダウン→HTML変換) -->
+        <dependency>
+            <groupId>org.commonmark</groupId>
+            <artifactId>commonmark</artifactId>
+            <version>0.24.0</version>
+        </dependency>
     </dependencies>
 
     <build>

@@ -152,6 +152,214 @@ input:focus {
     color: #7f8c8d;
 }
 
+.error-message {
+    padding: 20px;
+    margin: 20px 0;
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    border-radius: 4px;
+    color: #856404;
+}
+
+/* アカウントプラン */
+.btn-info {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background-color: #138496;
+}
+
+.account-plan-content {
+    margin-top: 20px;
+}
+
+.plan-meta {
+    display: flex;
+    gap: 20px;
+    color: #7f8c8d;
+    font-size: 13px;
+    margin-bottom: 15px;
+}
+
+.plan-body {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.plan-text {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.8;
+    margin: 0;
+}
+
+.plan-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.plan-textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.plan-textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+/* マークダウンエディター */
+.preview-toggle {
+    margin-bottom: 8px;
+}
+
+.markdown-editor {
+    display: flex;
+    gap: 16px;
+}
+
+.markdown-editor .editor-pane {
+    flex: 1;
+    min-width: 0;
+}
+
+.markdown-editor .preview-pane {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 16px;
+    background-color: #fff;
+    overflow-y: auto;
+    max-height: 500px;
+}
+
+.markdown-editor:not(.split) .editor-pane {
+    flex: 1 1 100%;
+}
+
+.preview-label {
+    font-size: 12px;
+    color: #7f8c8d;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #eee;
+}
+
+/* マークダウン表示スタイル */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #2c3e50;
+}
+
+.markdown-body h1 { font-size: 1.6em; border-bottom: 1px solid #eee; padding-bottom: 6px; }
+.markdown-body h2 { font-size: 1.4em; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+.markdown-body h3 { font-size: 1.2em; }
+.markdown-body h4 { font-size: 1.1em; }
+
+.markdown-body p {
+    margin-bottom: 12px;
+    line-height: 1.8;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+    margin-bottom: 12px;
+    padding-left: 24px;
+}
+
+.markdown-body li {
+    margin-bottom: 4px;
+    line-height: 1.8;
+}
+
+.markdown-body strong {
+    font-weight: 700;
+}
+
+.markdown-body em {
+    font-style: italic;
+}
+
+.markdown-body code {
+    background-color: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+.markdown-body pre {
+    background-color: #2d2d2d;
+    color: #f8f8f2;
+    padding: 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin-bottom: 12px;
+    line-height: 1.6;
+}
+
+.markdown-body pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+.markdown-body blockquote {
+    border-left: 4px solid #3498db;
+    padding: 8px 16px;
+    margin-bottom: 12px;
+    color: #555;
+    background-color: #f9f9f9;
+}
+
+.markdown-body table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 12px;
+}
+
+.markdown-body th,
+.markdown-body td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.markdown-body th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+}
+
+.markdown-body hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 16px 0;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
     .container {
@@ -164,6 +372,14 @@ input:focus {
 
     th, td {
         padding: 8px;
+    }
+
+    .markdown-editor {
+        flex-direction: column;
+    }
+
+    .markdown-editor .preview-pane {
+        max-height: 360px;
     }
     
     .btn {

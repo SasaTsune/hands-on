@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アカウントプラン - CRMデモ</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="'アカウントプラン - ' + ${customer.name}">アカウントプラン</h1>
+
+        <div class="actions">
+            <a th:href="@{/customers}" class="btn btn-secondary">顧客一覧に戻る</a>
+        </div>
+
+        <div th:if="${accountPlan != null}" class="account-plan-content">
+            <div class="plan-meta">
+                <span>作成日時: <span th:text="${#temporals.format(accountPlan.createdAt, 'yyyy/MM/dd HH:mm')}"></span></span>
+                <span>更新日時: <span th:text="${#temporals.format(accountPlan.updatedAt, 'yyyy/MM/dd HH:mm')}"></span></span>
+            </div>
+            <div class="plan-body markdown-body">
+                <div th:utext="${contentHtml}"></div>
+            </div>
+            <div class="plan-actions">
+                <a th:href="@{/customers/{id}/account-plan/edit(id=${customer.id})}" class="btn btn-primary">編集</a>
+                <form th:action="@{/customers/{id}/account-plan/delete(id=${customer.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('アカウントプランを削除してよろしいですか？');">削除</button>
+                </form>
+            </div>
+        </div>
+
+        <div th:if="${accountPlan == null}" class="empty-message">
+            <p>アカウントプランが登録されていません。</p>
+            <a th:href="@{/customers/{id}/account-plan/new(id=${customer.id})}" class="btn btn-primary">新規作成</a>
+        </div>
+    </div>
+</body>
+</html>

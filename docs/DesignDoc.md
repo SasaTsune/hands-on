@@ -12,6 +12,19 @@
 
 本アプリケーションは以下の機能を提供します。
 
+### アカウントプラン管理機能
+
+顧客に紐づくアカウントプラン情報を管理します。アカウントプランの内容はマークダウン形式で記述でき、入力フォームではリアルタイムプレビューが可能です。保存済みのプランは表示画面でHTMLとしてレンダリングされます。`AccountPlanService`により、顧客IDに紐づくプランの取得、新規登録、更新、削除の操作が可能です。データはインメモリ（ArrayList）で管理されます。`AccountPlanController`が画面遷移とCRUD操作のエンドポイントを提供します。
+
+エンドポイント:
+- `GET /customers/{customerId}/account-plan`（プラン表示）
+- `GET /customers/{customerId}/account-plan/new`（登録フォーム表示）
+- `POST /customers/{customerId}/account-plan/save`（保存処理）
+- `GET /customers/{customerId}/account-plan/edit`（編集フォーム表示）
+- `POST /customers/{customerId}/account-plan/delete`（削除処理）
+
+存在しない顧客IDへのアクセス時は`IllegalArgumentException`をスローし、エラーハンドリングします。
+
 ### 顧客一覧表示機能
 
 顧客情報をテーブル形式で一覧表示します。各顧客レコードに対して編集・削除操作へのリンクを提供します。顧客が登録されていない場合は、空の状態を示すメッセージを表示します。
@@ -45,12 +58,13 @@
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Presentation Layer                        │
-│              (Thymeleaf Templates: list.html, form.html)     │
+│  (Thymeleaf Templates: list.html, form.html,                │
+│   account-plan/show.html, account-plan/form.html)           │
 └─────────────────────────────────────────────────────────────┘
                               ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │                     Controller Layer                         │
-│                    (CustomerController)                      │
+│        (CustomerController, AccountPlanController)            │
 │  - HTTPリクエストの受付とルーティング                          │
 │  - Modelへのデータ設定                                        │
 │  - ビュー名の返却                                             │
@@ -58,7 +72,7 @@
                               ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │                      Service Layer                           │
-│                    (CustomerService)                         │
+│             (CustomerService, AccountPlanService)             │
 │  - ビジネスロジックの実装                                      │
 │  - データアクセスの抽象化                                      │
 │  - ID生成（AtomicLong）                                       │
@@ -66,12 +80,14 @@
                               ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │                       Data Layer                             │
-│                  (ArrayList<Customer>)                       │
+│          (ArrayList<Customer>, ArrayList<AccountPlan>)        │
 │  - インメモリデータストレージ                                  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ### データモデル
+
+#### 顧客情報（Customer）
 
 顧客情報は`Customer`クラスで表現されます。
 
@@ -83,6 +99,18 @@
 | phone | String | 任意 | 電話番号 |
 | company | String | 任意 | 会社名 |
 
+#### アカウントプラン（AccountPlan）
+
+アカウントプランは`AccountPlan`クラスで表現されます。顧客に紐づくプラン情報をマークダウン形式で管理します。
+
+| フィールド | 型 | 必須 | 説明 |
+|-----------|------|------|------|
+| id | Long | 自動生成 | 一意識別子。AtomicLongによる連番 |
+| customerId | Long | 必須 | 紐づく顧客のID |
+| content | String | 任意 | アカウントプランの内容（マークダウン形式） |
+| createdAt | LocalDateTime | 自動設定 | 作成日時 |
+| updatedAt | LocalDateTime | 自動設定 | 更新日時 |
+
 ### 技術スタック
 
 | カテゴリ | 技術 | バージョン |
@@ -91,6 +119,7 @@
 | フレームワーク | Spring Boot | 3.2.2 |
 | テンプレートエンジン | Thymeleaf | Spring Boot管理 |
 | ビルドツール | Maven | - |
+| マークダウン変換 | commonmark-java / marked.js | - |
 | Webサーバー | 組み込みTomcat | Spring Boot管理 |
 
 ### ディレクトリ構成
@@ -105,18 +134,27 @@ demo-java-crm/
     ├── java/com/example/crm/
     │   ├── CrmApplication.java                # アプリケーション起動クラス
     │   ├── controller/
-    │   │   └── CustomerController.java        # Webコントローラー
+    │   │   ├── CustomerController.java        # 顧客コントローラー
+    │   │   ├── AccountPlanController.java     # アカウントプランコントローラー
+    │   │   └── GlobalExceptionHandler.java    # 例外ハンドリング
     │   ├── model/
-    │   │   └── Customer.java                  # ドメインモデル
+    │   │   ├── Customer.java                  # 顧客ドメインモデル
+    │   │   └── AccountPlan.java               # アカウントプランドメインモデル
     │   └── service/
-    │       └── CustomerService.java           # ビジネスロジック
+    │       ├── CustomerService.java           # 顧客ビジネスロジック
+    │       ├── AccountPlanService.java        # アカウントプランビジネスロジック
+    │       └── MarkdownService.java           # マークダウン変換サービス
     └── resources/
         ├── application.properties             # アプリケーション設定
         ├── static/css/
         │   └── style.css                      # スタイルシート
         └── templates/
-            ├── form.html                      # 登録・編集フォーム
-            └── list.html                      # 顧客一覧
+            ├── form.html                      # 顧客登録・編集フォーム
+            ├── list.html                      # 顧客一覧
+            ├── error.html                     # エラー画面
+            └── account-plan/
+                ├── show.html                  # アカウントプラン表示（マークダウンHTMLレンダリング）
+                └── form.html                  # アカウントプラン登録・編集フォーム（マークダウンプレビュー付き）
 ```
 
 ### 画面遷移
@@ -134,7 +172,23 @@ demo-java-crm/
     │                 ├── [保存] ──→ 顧客一覧
     │                 └── [キャンセル] ──→ 顧客一覧
     │
-    └── [削除] ──→ 確認ダイアログ ──→ 顧客一覧
+    ├── [削除] ──→ 確認ダイアログ ──→ 顧客一覧
+    │
+    └── [プラン] ──→ アカウントプラン表示 (account-plan/show.html)
+                        │
+                        ├── [新規作成] ──→ 登録フォーム (account-plan/form.html, isEdit=false)
+                        │                      │
+                        │                      ├── [保存] ──→ アカウントプラン表示
+                        │                      └── [キャンセル] ──→ アカウントプラン表示
+                        │
+                        ├── [編集] ──→ 編集フォーム (account-plan/form.html, isEdit=true)
+                        │                 │
+                        │                 ├── [保存] ──→ アカウントプラン表示
+                        │                 └── [キャンセル] ──→ アカウントプラン表示
+                        │
+                        ├── [削除] ──→ 確認ダイアログ ──→ アカウントプラン表示
+                        │
+                        └── [顧客一覧に戻る] ──→ 顧客一覧
 ```
 
 ### 初期データ
@@ -184,3 +238,6 @@ Spring Boot + Thymeleafを使用したWebアプリケーション開発の基本
 | 日付 | 変更内容 | 担当者 |
 |------|----------|--------|
 | 2026-02-05 | 初版作成（リバースエンジニアリングによるドキュメント化） | Devin |
+| 2026-02-17 | AccountPlanモデルおよびAccountPlanServiceの追加 | Devin |
+| 2026-02-17 | AccountPlanControllerおよび画面テンプレートの追加 | Devin |
+| 2026-02-17 | マークダウン入力プレビュー・HTMLレンダリング表示の追加 | Devin |
