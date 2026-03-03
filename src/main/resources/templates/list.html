@@ -14,7 +14,12 @@
             <a th:href="@{/customers/new}" class="btn btn-primary">新規登録</a>
         </div>
 
-        <table>
+        <div class="search-box">
+            <input type="text" id="customerNameSearch" placeholder="顧客名で検索..."
+                   oninput="filterCustomersByName(this.value)">
+        </div>
+
+        <table id="customerTable">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -48,5 +53,41 @@
             <p>登録されている顧客情報がありません。</p>
         </div>
     </div>
+
+    <script>
+        function filterCustomersByName(query) {
+            var normalizedQuery = query.toLowerCase();
+            var table = document.getElementById('customerTable');
+            var rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            var visibleCount = 0;
+
+            for (var i = 0; i < rows.length; i++) {
+                var nameCell = rows[i].getElementsByTagName('td')[1];
+                if (nameCell) {
+                    var name = nameCell.textContent.toLowerCase();
+                    if (name.indexOf(normalizedQuery) !== -1) {
+                        rows[i].style.display = '';
+                        visibleCount++;
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
+            }
+
+            var emptyMessage = document.getElementById('noSearchResults');
+            if (visibleCount === 0 && query.length > 0) {
+                if (!emptyMessage) {
+                    emptyMessage = document.createElement('div');
+                    emptyMessage.id = 'noSearchResults';
+                    emptyMessage.className = 'empty-message';
+                    emptyMessage.innerHTML = '<p>該当する顧客が見つかりません。</p>';
+                    table.parentNode.insertBefore(emptyMessage, table.nextSibling);
+                }
+                emptyMessage.style.display = '';
+            } else if (emptyMessage) {
+                emptyMessage.style.display = 'none';
+            }
+        }
+    </script>
 </body>
 </html>
