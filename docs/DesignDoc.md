@@ -6,7 +6,7 @@
 
 開発の目的は、Spring Bootを用いたWebアプリケーション開発の基本的なパターン（MVC、CRUD操作、テンプレートエンジン）を学習・理解するためのサンプルコードを提供することです。本番環境での使用を想定したものではなく、教育・学習目的のシンプルな実装となっています。
 
-データストレージにはインメモリ（ArrayList）を採用しており、アプリケーション再起動時にデータはリセットされます。これは意図的な設計であり、データベース設定なしで即座に動作確認できることを優先しています。
+顧客データの永続化には PostgreSQL 16 を採用しており、Docker Compose でアプリケーションとデータベースが同時に起動します。アカウントプランデータはインメモリ（ArrayList）で管理されており、アプリケーション再起動時にリセットされます。
 
 ## 機能一覧
 
@@ -75,13 +75,13 @@
 │             (CustomerService, AccountPlanService)             │
 │  - ビジネスロジックの実装                                      │
 │  - データアクセスの抽象化                                      │
-│  - ID生成（AtomicLong）                                       │
+│  - ID生成（PostgreSQL Sequence / AtomicLong）               │
 └─────────────────────────────────────────────────────────────┘
                               ↓ ↑
 ┌─────────────────────────────────────────────────────────────┐
 │                       Data Layer                             │
-│          (ArrayList<Customer>, ArrayList<AccountPlan>)        │
-│  - インメモリデータストレージ                                  │
+│  - PostgreSQL 16 (Customer: JPA + customersテーブル)    │
+│  - インメモリ (AccountPlan: ArrayList)                    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -93,7 +93,7 @@
 
 | フィールド | 型 | 必須 | 説明 |
 |-----------|------|------|------|
-| id | Long | 自動生成 | 一意識別子。AtomicLongによる連番 |
+| id | Long | 自動生成 | 一意識別子。PostgreSQLシーケンス（`customers_seq`）による連番 |
 | name | String | 必須 | 顧客氏名 |
 | email | String | 必須 | メールアドレス |
 | phone | String | 任意 | 電話番号 |
@@ -118,14 +118,23 @@
 | 言語 | Java | 17 |
 | フレームワーク | Spring Boot | 3.2.2 |
 | テンプレートエンジン | Thymeleaf | Spring Boot管理 |
+| データベース | PostgreSQL | 16 |
+| JDBCドライバ | postgresql | Spring Boot管理 |
+| ORM | Spring Data JPA (Hibernate) | Spring Boot管理 |
 | ビルドツール | Maven | - |
 | マークダウン変換 | commonmark-java / marked.js | - |
 | Webサーバー | 組み込みTomcat | Spring Boot管理 |
+| インフラ | Docker / Docker Compose | - |
 
 ### ディレクトリ構成
 
 ```
 demo-java-crm/
+├── docker-compose.yml                         # Docker Compose設定
+├── .env.example                               # 環境変数テンプレート
+├── docker/
+│   └── app/
+│       └── Dockerfile                         # Spring Bootアプリ用Dockerfile
 ├── pom.xml                                    # Maven設定
 ├── README.md                                  # プロジェクト説明
 ├── docs/
@@ -146,6 +155,8 @@ demo-java-crm/
     │       └── MarkdownService.java           # マークダウン変換サービス
     └── resources/
         ├── application.properties             # アプリケーション設定
+        ├── schema.sql                         # テーブル定義（PostgreSQL DDL）
+        ├── data.sql                           # 初期データ投入（PostgreSQL構文）
         ├── static/css/
         │   └── style.css                      # スタイルシート
         └── templates/
@@ -193,7 +204,7 @@ demo-java-crm/
 
 ### 初期データ
 
-アプリケーション起動時に、`CustomerService`のコンストラクタで以下のサンプルデータが自動登録されます。
+アプリケーション起動時に、`src/main/resources/data.sql` により以下のサンプルデータが PostgreSQL に自動投入されます。IDは `customers_seq` シーケンスにより自動採番されます。
 
 | 氏名 | メール | 電話番号 | 会社名 |
 |------|--------|----------|--------|
@@ -213,25 +224,25 @@ Spring Boot + Thymeleafを使用したWebアプリケーション開発の基本
 
 本アプリケーションでは以下を意図的にスコープ外としています。
 
-本番環境での使用、データの永続化（データベース連携）、認証・認可機能、入力バリデーション（サーバーサイド）、エラーハンドリングの詳細実装、ユニットテスト・統合テストの実装、REST API対応です。
+本番環境での使用、アカウントプランのデータベース永続化、認証・認可機能、入力バリデーション（サーバーサイド）、エラーハンドリングの詳細実装、ユニットテスト・統合テストの実装、REST API対応です。
 
 ## Cross-cutting concerns（横断的な懸念事項）
 
 ### セキュリティ
 
-本アプリケーションはデモ用途であり、以下のセキュリティ機能は実装されていません。認証・認可、CSRF対策（Spring Securityなし）、入力値のサニタイズ、SQLインジェクション対策（データベース未使用のため該当なし）。本番環境で使用する場合は、Spring Securityの導入と適切なセキュリティ設定が必要です。
+本アプリケーションはデモ用途であり、以下のセキュリティ機能は実装されていません。認証・認可、CSRF対策（Spring Securityなし）、入力値のサニタイズ。なお、顧客データは Spring Data JPA を介して PostgreSQL にアクセスしており、JPA がパラメータバインディングを行うため SQL インジェクションのリスクは低減されています。本番環境で使用する場合は、Spring Securityの導入と適切なセキュリティ設定が必要です。
 
 ### パフォーマンス
 
-インメモリストレージを使用しているため、大量データの処理には適していません。`findAll()`メソッドは全データをコピーして返却するため、データ量が増加するとメモリ使用量が増大します。本番環境ではデータベースとページネーションの実装が必要です。
+顧客データは PostgreSQL に永続化されていますが、全件取得（`findAll()`）が基本となっておりページネーションは未実装です。アカウントプランはインメモリストレージのため、大量データや再起動後のデータ保持には適していません。本番環境ではページネーションの実装およびアカウントプランのデータベース永続化が必要です。
 
 ### スケーラビリティ
 
-インメモリストレージのため、複数インスタンスでのデータ共有ができません。スケールアウトが必要な場合は、外部データベースへの移行が必須です。
+顧客データは PostgreSQL に永続化されているため、複数インスタンスからのデータ共有が可能です。アカウントプランはインメモリストレージのため、スケールアウト時にはデータベースへの移行が必要です。
 
 ### 拡張性
 
-データの永続化が必要な場合は、Spring Data JPAとH2/PostgreSQL等のデータベースを導入することで対応可能です。READMEにH2データベース導入の手順が記載されています。
+顧客データは既に Spring Data JPA + PostgreSQL で永続化されています。アカウントプランの永続化が必要な場合は、同様に JPA エンティティとリポジトリを追加することで対応可能です。
 
 ## 変更履歴
 
@@ -241,3 +252,4 @@ Spring Boot + Thymeleafを使用したWebアプリケーション開発の基本
 | 2026-02-17 | AccountPlanモデルおよびAccountPlanServiceの追加 | Devin |
 | 2026-02-17 | AccountPlanControllerおよび画面テンプレートの追加 | Devin |
 | 2026-02-17 | マークダウン入力プレビュー・HTMLレンダリング表示の追加 | Devin |
+| 2026-03-04 | Oracle Database から PostgreSQL 16 への移行（インフラ・アプリケーション・ドキュメント） | Devin |

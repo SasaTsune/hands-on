@@ -19,7 +19,7 @@
 - **テンプレートエンジン**: Thymeleaf
 - **ビルドツール**: Maven
 - **マークダウン変換**: commonmark-java 0.24.0（サーバーサイド） / marked.js（クライアントサイドプレビュー）
-- **データベース**: Oracle Database Free 23c
+- **データベース**: PostgreSQL 16
 - **ORM**: Spring Data JPA
 - **インフラ**: Docker / Docker Compose
 
@@ -45,16 +45,32 @@ docker compose version
 ### 1. プロジェクトディレクトリに移動
 
 ```bash
-cd demo-java-crm
+cd demo-java-crm-rdm-migration
 ```
 
-### 2. コンテナの起動
+### 2. 環境変数の設定
+
+`.env.example` をコピーして `.env` ファイルを作成し、データベースの認証情報を設定します：
 
 ```bash
-docker-compose up -d
+cp .env.example .env
 ```
 
-### 3. ブラウザでアクセス
+`.env` ファイルを編集して、適切な値を設定してください：
+
+```
+POSTGRES_DB=your_database_name
+POSTGRES_USER=your_username
+POSTGRES_PASSWORD=your_password
+```
+
+### 3. コンテナの起動
+
+```bash
+docker compose up -d
+```
+
+### 4. ブラウザでアクセス
 
 コンテナが起動したら、以下のURLにアクセスします：
 
@@ -67,6 +83,7 @@ http://localhost:8080/customers
 ```
 demo-java-crm/
 ├── docker-compose.yml                  # Docker Compose設定
+├── .env.example                        # 環境変数テンプレート
 ├── docker/
 │   └── app/
 │       └── Dockerfile                  # Spring Bootアプリ用Dockerfile
@@ -93,9 +110,9 @@ demo-java-crm/
         │                   ├── AccountPlanController.java   # アカウントプランコントローラー
         │                   └── GlobalExceptionHandler.java  # 例外ハンドリング
         └── resources/
-            ├── application.properties                    # アプリケーション設定
-            ├── schema.sql                                # テーブル定義（DDL）
-            ├── data.sql                                  # 初期データ投入
+                ├── application.properties                    # アプリケーション設定
+                ├── schema.sql                                # テーブル定義（PostgreSQL DDL）
+                ├── data.sql                                  # 初期データ投入（PostgreSQL構文）
             ├── static/
             │   └── css/
             │       └── style.css                         # スタイルシート
@@ -151,14 +168,17 @@ server.port=8080  # 任意のポート番号に変更
 
 ### データベース構成
 
-本アプリケーションは Oracle Database Free 23c を使用してデータを永続化しています。
+本アプリケーションは PostgreSQL 16 を使用してデータを永続化しています。
 
-- **テーブル定義**: `src/main/resources/schema.sql` で `CUSTOMERS` テーブルとシーケンスを作成
-- **初期データ**: `src/main/resources/data.sql` でサンプルデータを投入
+- **テーブル定義**: `src/main/resources/schema.sql` で `customers` テーブルとシーケンスを作成（PostgreSQL DDL）
+- **初期データ**: `src/main/resources/data.sql` でサンプルデータを投入（`nextval('customers_seq')` によるID自動採番）
 - **ORM**: Spring Data JPA（`CustomerRepository` が `JpaRepository` を継承）
-- **接続設定**: `application.properties` で Oracle データソースを設定
+- **接続設定**: `application.properties` で環境変数プレースホルダーを使用した PostgreSQL データソースを設定
+- **認証情報**: `.env` ファイルで管理（`.env.example` をテンプレートとして使用）
 
-Docker Compose でアプリケーションと Oracle Database が同時に起動し、DB の準備完了後にアプリケーションが接続します。
+Docker Compose でアプリケーションと PostgreSQL が同時に起動し、DB の準備完了（ヘルスチェック）後にアプリケーションが接続します。
+
+> **注意**: アカウントプラン機能はインメモリ（ArrayList）で管理されており、アプリケーション再起動時にデータはリセットされます。
 
 ## ライセンス
 
