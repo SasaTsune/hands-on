@@ -1,3 +1,3 @@
-INSERT INTO CUSTOMERS (ID, NAME, EMAIL, PHONE, COMPANY) VALUES (CUSTOMERS_SEQ.NEXTVAL, '田中太郎', 'tanaka@example.com', '03-1234-5678', '株式会社サンプル');
-INSERT INTO CUSTOMERS (ID, NAME, EMAIL, PHONE, COMPANY) VALUES (CUSTOMERS_SEQ.NEXTVAL, '佐藤花子', 'sato@example.com', '03-2345-6789', 'テスト株式会社');
-INSERT INTO CUSTOMERS (ID, NAME, EMAIL, PHONE, COMPANY) VALUES (CUSTOMERS_SEQ.NEXTVAL, '鈴木一郎', 'suzuki@example.com', '03-3456-7890', 'デモ企業');
+INSERT INTO customers (id, name, email, phone, company) VALUES (nextval('customers_seq'), '田中太郎', 'tanaka@example.com', '03-1234-5678', '株式会社サンプル');
+INSERT INTO customers (id, name, email, phone, company) VALUES (nextval('customers_seq'), '佐藤花子', 'sato@example.com', '03-2345-6789', 'テスト株式会社');
+INSERT INTO customers (id, name, email, phone, company) VALUES (nextval('customers_seq'), '鈴木一郎', 'suzuki@example.com', '03-3456-7890', 'デモ企業');

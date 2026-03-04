@@ -19,7 +19,7 @@
 - **テンプレートエンジン**: Thymeleaf
 - **ビルドツール**: Maven
 - **マークダウン変換**: commonmark-java 0.24.0（サーバーサイド） / marked.js（クライアントサイドプレビュー）
-- **データベース**: Oracle Database Free 23c
+- **データベース**: PostgreSQL 16
 - **ORM**: Spring Data JPA
 - **インフラ**: Docker / Docker Compose
 
@@ -48,7 +48,15 @@ docker compose version
 cd demo-java-crm
 ```
 
-### 2. コンテナの起動
+### 2. 環境変数ファイルの作成
+
+`.env.example` をコピーして `.env` ファイルを作成し、必要に応じてパスワード等を変更してください：
+
+```bash
+cp .env.example .env
+```
+
+### 3. コンテナの起動
 
 ```bash
 docker-compose up -d
@@ -151,14 +159,14 @@ server.port=8080  # 任意のポート番号に変更
 
 ### データベース構成
 
-本アプリケーションは Oracle Database Free 23c を使用してデータを永続化しています。
+本アプリケーションは PostgreSQL 16 を使用してデータを永続化しています。
 
-- **テーブル定義**: `src/main/resources/schema.sql` で `CUSTOMERS` テーブルとシーケンスを作成
+- **テーブル定義**: `src/main/resources/schema.sql` で `customers` テーブルとシーケンスを作成
 - **初期データ**: `src/main/resources/data.sql` でサンプルデータを投入
 - **ORM**: Spring Data JPA（`CustomerRepository` が `JpaRepository` を継承）
-- **接続設定**: `application.properties` で Oracle データソースを設定
+- **接続設定**: `application.properties` で PostgreSQL データソースを設定
 
-Docker Compose でアプリケーションと Oracle Database が同時に起動し、DB の準備完了後にアプリケーションが接続します。
+Docker Compose でアプリケーションと PostgreSQL が同時に起動し、DB の準備完了後にアプリケーションが接続します。
 
 ## ライセンス
 

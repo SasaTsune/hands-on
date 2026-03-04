@@ -1,12 +1,12 @@
 services:
-  oracle-db:
-    image: gvenzl/oracle-free:23-slim
-    environment:
-      ORACLE_PASSWORD: oracle
+  postgres-db:
+    image: postgres:16-alpine
+    env_file:
+      - .env
     ports:
-      - "1521:1521"
+      - "5432:5432"
     healthcheck:
-      test: ["CMD", "healthcheck.sh"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -18,9 +18,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      oracle-db:
+      postgres-db:
         condition: service_healthy
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle-db:1521/FREEPDB1
-      SPRING_DATASOURCE_USERNAME: system
-      SPRING_DATASOURCE_PASSWORD: oracle
+    env_file:
+      - .env

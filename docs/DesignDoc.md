@@ -120,7 +120,9 @@
 | テンプレートエンジン | Thymeleaf | Spring Boot管理 |
 | ビルドツール | Maven | - |
 | マークダウン変換 | commonmark-java / marked.js | - |
+| ORM | Spring Data JPA | Spring Boot管理 |
 | Webサーバー | 組み込みTomcat | Spring Boot管理 |
+| インフラ | Docker / Docker Compose | - |
 
 ### ディレクトリ構成
 
@@ -241,3 +243,4 @@ Spring Boot + Thymeleafを使用したWebアプリケーション開発の基本
 | 2026-02-17 | AccountPlanモデルおよびAccountPlanServiceの追加 | Devin |
 | 2026-02-17 | AccountPlanControllerおよび画面テンプレートの追加 | Devin |
 | 2026-02-17 | マークダウン入力プレビュー・HTMLレンダリング表示の追加 | Devin |
+| 2026-03-04 | データベースをOracle Database Free 23cからPostgreSQL 16に移行 | Devin |
