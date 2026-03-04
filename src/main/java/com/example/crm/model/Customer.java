@@ -6,12 +6,12 @@ import jakarta.persistence.*;
  * 顧客情報モデル
  */
 @Entity
-@Table(name = "CUSTOMERS")
+@Table(name = "customers")
 public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "customers_seq")
-    @SequenceGenerator(name = "customers_seq", sequenceName = "CUSTOMERS_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "customers_seq", sequenceName = "customers_seq", allocationSize = 1)
     private Long id;
 
     private String name;
