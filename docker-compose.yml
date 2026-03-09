@@ -1,12 +1,14 @@
 services:
-  oracle-db:
-    image: gvenzl/oracle-free:23-slim
+  postgres-db:
+    image: postgres:16-alpine
     environment:
-      ORACLE_PASSWORD: oracle
+      POSTGRES_DB: crm
+      POSTGRES_USER: crm_user
+      POSTGRES_PASSWORD: crm_password
     ports:
-      - "1521:1521"
+      - "5432:5432"
     healthcheck:
-      test: ["CMD", "healthcheck.sh"]
+      test: ["CMD-SHELL", "pg_isready -U crm_user -d crm"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -18,9 +20,9 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      oracle-db:
+      postgres-db:
         condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:oracle:thin:@oracle-db:1521/FREEPDB1
-      SPRING_DATASOURCE_USERNAME: system
-      SPRING_DATASOURCE_PASSWORD: oracle
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/crm
+      SPRING_DATASOURCE_USERNAME: crm_user
+      SPRING_DATASOURCE_PASSWORD: crm_password
