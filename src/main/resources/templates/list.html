@@ -14,7 +14,11 @@
             <a th:href="@{/customers/new}" class="btn btn-primary">新規登録</a>
         </div>
 
-        <table>
+        <div class="search-box">
+            <input type="text" id="customerSearch" placeholder="顧客名で検索..." autocomplete="off">
+        </div>
+
+        <table id="customerTable">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -47,6 +51,44 @@
         <div th:if="${#lists.isEmpty(customers)}" class="empty-message">
             <p>登録されている顧客情報がありません。</p>
         </div>
+
+        <div id="noSearchResults" class="empty-message" style="display: none;">
+            <p>該当する顧客が見つかりません。</p>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var searchInput = document.getElementById('customerSearch');
+            var table = document.getElementById('customerTable');
+            var tbody = table ? table.querySelector('tbody') : null;
+            var noResults = document.getElementById('noSearchResults');
+
+            if (searchInput && tbody) {
+                searchInput.addEventListener('input', function() {
+                    var keyword = this.value.toLowerCase();
+                    var rows = tbody.querySelectorAll('tr');
+                    var visibleCount = 0;
+
+                    rows.forEach(function(row) {
+                        var nameCell = row.querySelectorAll('td')[1];
+                        if (nameCell) {
+                            var name = nameCell.textContent.toLowerCase();
+                            if (name.indexOf(keyword) !== -1) {
+                                row.style.display = '';
+                                visibleCount++;
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        }
+                    });
+
+                    if (noResults) {
+                        noResults.style.display = (visibleCount === 0 && keyword.length > 0) ? '' : 'none';
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
